@@ -1,0 +1,28 @@
+Assignment for 04.04.19
+
+Solution:
+
+function main 0
+ push constant 3
+ call factorial 1
+ return
+
+function factorial 0
+ push argument 0
+ push constant 1
+ eq
+ if-goto BASECASE
+ push argument 0
+ push argument 0
+ push constant 1
+ sub
+ call factorial 1
+ call mult 2
+ return
+
+label BASECASE
+ push constant 1
+ return
+
+function mult 2
+// code omitted

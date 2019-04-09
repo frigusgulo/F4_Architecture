@@ -15,15 +15,14 @@ def label(labelname):
 
 callnum = -1
 def callFunction(FunctionName, nArgs):
-    # TODO push_D() "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
     callnum += 1
-    str = "@" + str(FunctionName) + callnum + "\nD=A\n" + "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+    RETURN_ADDRESS = str(FunctionName) + str(callnum)
+    str = "@" + RETURN_ADDRESS + "\nD=A\n" + push_D()
     str += saveFrame(LCL) + saveFrame(ARG) + saveFrame(THIS) + saveFrame(THAT)
-    str += "@SP\nD=M\n@5\nD=D-A\n@" + int(nArgs) + "\nD=D-A\n@ARG\nM=D\n"
+    str += "@SP\nD=M\n@" + (5 + int(nArgs)) + "\nD=D-A\n@ARG\nM=D\n"
     str += "@SP\nD=M\n@LCL\nM=D\n"
     str += goto(str(FunctionName))
-    str += "(" + str(FunctionName) + callnum + ")\n"
-
+    str += "(" + RETURN_ADDRESS + ")\n"
     return str
 
 def saveFrame(name):

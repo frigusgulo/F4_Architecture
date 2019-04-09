@@ -9,6 +9,7 @@ def if_goto(labelname):
     # pop_D() = "@SP\nAM=M-1\nD=M\nM=0\n"
     return "@SP\nAM=M-1\nD=M\nM=0\n" + "@" + str(labelname) + "\nD;JGT\n"
     # my understanding is if-goto jumps if top of stack is -1 (true) i.e. pop_D() + D=D+1 + D;JEQ
+
 def label(labelname):
     return "(" + str(labelname) + ")\n"
 
@@ -31,10 +32,10 @@ def saveFrame(name):
 
 def makeFunction(FunctionName, nVars):
     # TODO push_D() "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
-    str = "(" + str(FunctionName) + ")\n"
+    str = label(FunctionName)
     for i in range(nVars):
-        str += "@0\nD=A\n" + "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
-
+        str += "D=0\n" + "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
+    # label(FunctionName) + nVars * (D=0 + push_D())
     return str
 
 def return():

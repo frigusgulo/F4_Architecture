@@ -7,8 +7,8 @@ def goto(labelname):
 
 def if_goto(labelname):
     # pop_D() = "@SP\nAM=M-1\nD=M\nM=0\n"
-    return "@SP\nAM=M-1\nD=M\nM=0\n" + "D=D+1\n@" + str(labelname) + "\nD;JEQ\n"
-
+    return "@SP\nAM=M-1\nD=M\nM=0\n" + "@" + str(labelname) + "\nD;JGT\n"
+    # my understanding is if-goto jumps if top of stack is -1 (true) i.e. pop_D() + D=D+1 + D;JEQ
 def label(labelname):
     return "(" + str(labelname) + ")\n"
 

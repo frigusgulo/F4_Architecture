@@ -9,14 +9,14 @@ def main():
         return -1
     elif len(sys.argv) < 2:
         files.append(input("Enter File path\n"))
-    if sys.argv[1][-1] not in ['/','m']:
-        sys.argv[1] += '/'
     if ".vm" in sys.argv[1]:
         files.append(sys.argv[1])
-    else:
+    elif sys.argv[1][-1] != '/':
+        sys.argv[1] += '/'
         files = glob.glob(sys.argv[1] + "/*.vm")
 
-    SName = sys.argv[1] + sys.argv[1].split('/')[-2] + '.asm'
+    if len(files) != 1:
+        SName = sys.argv[1] + sys.argv[1].split('/')[-2] + '.asm'
     Fstr = ''
 
     for file in files:
@@ -32,20 +32,21 @@ def main():
             pass
 
         # VMParse parses fileVM into fileASM
-        if len(files) == 0:
+        if len(files) == 1:
             VMP.VMParse(fileVM, fileASM, filename, 0)
         else:
             Fstr += VMP.VMParse(fileVM, fileASM, filename, 1)
 
-    try:
-        temp = open(SName, 'x')
-        temp.close()
-    except:
-        pass
+    if len(files) != 1:
+        try:
+            temp = open(SName, 'x')
+            temp.close()
+        except:
+            pass
 
-    ASM = open(SName, "w")
-    ASM.write(Fstr)
-    ASM.close()
+        ASM = open(SName, "w")
+        ASM.write(Fstr)
+        ASM.close()
 
 if __name__ == '__main__':
     main()

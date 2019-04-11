@@ -1,5 +1,6 @@
 import VMParse as VMP
 import sys
+import glob
 
 def main():
     files = []
@@ -11,22 +12,23 @@ def main():
     elif ".vm" in sys.argv[1]:
         files.append(sys.argv[1][:len(sys.argv[1])-3])
     else:
-        file = sys.argv[1]
+        files = glob.glob(sys.argv[1] + "/*.vm")
 
-    for file in files
-    fileASM = file + ".asm"
-    fileVM = file + ".vm"
-    filename = file.split('/')[-1]
+    # print(files)
 
-    try:
-        tmp = open(fileASM, 'x')
-        tmp.close()
-    except:
-        pass
+    for file in files:
+        fileASM = file + ".asm"
+        fileVM = file + ".vm"
+        filename = file.split('/')[-1]
 
-    # VMParse parses fileVM into fileASM
+        try:
+            tmp = open(fileASM, 'x')
+            tmp.close()
+        except:
+            pass
 
-    VMP.VMParse(fileVM, fileASM, filename)
+            # VMParse parses fileVM into fileASM
+            VMP.VMParse(fileVM, fileASM, filename)
 
 if __name__ == '__main__':
     main()

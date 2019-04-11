@@ -5,7 +5,7 @@
 
 filename = ""
 
-def VMParse(fileVM, fileASM, filenameOnly):
+def VMParse(fileVM, fileASM, filenameOnly, bool_multiple):
 
     filename = filenameOnly
 
@@ -31,17 +31,18 @@ def VMParse(fileVM, fileASM, filenameOnly):
 
 
     # BootStrap code
-
-    STR = "@256\nD=A\n@SP\nM=D\n"
-    STR += Parse([['call', 'Sys.init', '0']])
+    # STR = "@256\nD=A\n@SP\nM=D\n"
+    # STR += Parse([['call', 'Sys.init', '0']])
 
     # Parse the .vm file
-    STR += Parse(VML)
+    STR = Parse(VML)
 
-    # print(STR)
     fileASM = open(fileASM, "w")
     fileASM.write(STR)
     fileASM.close()
+
+    if bool_multiple == 1:
+        return STR
 
 def initialize(num, arg):
     return "@" + str(num) + "\nD=A\n@" + arg + "\nM=D\n"
@@ -217,7 +218,7 @@ def callFunction(FunctionName, nArgs):
     RETURN_ADDRESSES.append(RETURN_ADDRESS)
     return_str = "@" + RETURN_ADDRESS + "\nD=A\n" + push_D()
     return_str += saveFrame('LCL') + saveFrame('ARG') + saveFrame('THIS') + saveFrame('THAT')
-    return_str += "@SP\nD=M\n@" + str(int(nArgs) + 5) + "\nD=D-A\n@ARG\nM=D\n"
+    return_str += "@" + str(int(nArgs) + 5) + "\nD=A\n@R0\nA=M\nAD=A-D\n" + "@ARG\nM=D\n"
     return_str += "@SP\nD=M\n@LCL\nM=D\n"
     return_str += goto(str(FunctionName))
     return_str += "(" + RETURN_ADDRESS + ")\n"
@@ -234,14 +235,15 @@ def makeFunction(FunctionName, nVars):
     return str
 
 def return_control():
-    str = "@LCL\nD=M\n@endFrame\nM=D\n"
-    str += "@5\nD=A\n@endFrame\nD=M-D\n@returnAddress\nM=D\n"
-    str += pop_D() + "@ARG\nM=D\n"
-    str += "@SP\nM=D+1\n"
-    str += "@endFrame\nD=M\n" + return_control_end("THAT") + return_control_end("THIS") + return_control_end("ARG") + return_control_end("LCL")
-    str += goto(RETURN_ADDRESSES[-1:][0])
-    RETURN_ADDRESSES.pop()
+    str = "@R1\nD=M\n@R13\nM=D\n"
+    str += "@5\nA=D-A\nD=M\n@R14\nM=D\n"
+    str += "@SP\nM=M-1\n@ARG\nAD=M\n"
+    str += "@R15\nM=D\n@SP\nA=M\nD=M\n"
+    str += "@R15\nA=M\nM=D\n@R2\nD=M\n"
+    str += "@R0\nM=D+1\n@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n"
+    str += "@R4\nM=D\n@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n"
+    str += "@R3\nM=D\n@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n"
+    str += "@R2\nM=D\n@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n"
+    str += "@R1\nM=D\n"
+    str += "@R14\nA=M\n0;JMP\n"
     return str
-
-def return_control_end(name):
-    return "@" + name + "\nDM=D-1\n"
